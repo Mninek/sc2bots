@@ -5,7 +5,8 @@ from sc2.player import Bot, Computer
 
 
 from juicer_bot import JuicerBot
-bot = Bot(Race.Zerg, JuicerBot())
+from GruyereBot import GruyereBot
+bot = Bot(Race.Protoss, GruyereBot())
 
 if __name__ == '__main__':
     print("starting game")

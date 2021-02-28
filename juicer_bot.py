@@ -18,7 +18,28 @@ class JuicerBot(sc2.BotAI):
             w.gather(self.mineral_field.closest_to(w))
         
         await self.chat_send(random.choice(self.start_message())) 
+        nexus = self.townhalls[0]
+        tp = sc2.position.Point2((135, 95))
+        bp = sc2.position.Point2((40, 75))
+        d1 = nexus.distance_to(tp)
+        d2 = nexus.distance_to(bp)
+        if (d1 > d2):
+            self.proxyvar = tp
+        else:
+            self.proxyvar = bp
 
+    #testing how to slowly have a unit move up the ramp
+    async def on_step(self, iteration):
+        if iteration == 0:
+            worker = self.workers.random
+            self.scoutworker = worker
+            worker.move(self.proxyvar)
+
+       #if we started the attack, select the zealots and have them go  
+        if self.scoutworker:
+            self.scoutworker.attack(self.scoutworker.position.towards(self.enemy_start_locations[0], 2))
+
+    """
     #on_step is essentially each frame of the game
     async def on_step(self, iteration):
 
@@ -135,7 +156,7 @@ class JuicerBot(sc2.BotAI):
              #   for chat in self.state.chat:
               #      if chat.message == "gg":
                #         await self.chat_send('ez noob')
-            
+    """
 
     #chooses a random start message
     def start_message(self):

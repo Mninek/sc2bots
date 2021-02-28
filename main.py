@@ -12,4 +12,4 @@ if __name__ == '__main__':
     print("starting game")
     sc2.run_game(sc2.maps.get("AcropolisLE"),
                  [bot, Computer(Race.Protoss, Difficulty.VeryEasy)],
-                 realtime=True)
+                 realtime=False)

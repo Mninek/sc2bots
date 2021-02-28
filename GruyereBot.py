@@ -1,9 +1,9 @@
 ###         TO DO BLOCK BECAUSE I AM FORGETFUL
-#   ATTACKS WORK ?? BUT ATTACK MOVE IS VERY SLOW, SPEED IT UP AND QUEUE IT SO THE ZEALOTS SLOWLY RUN UP THE RAM
-#   TEST ABOVE BY SMALL CODE THAT HAS A PROBE WALK ACROSS THE MAP TO THE OPPONENTS RAMP
-#
-#
-#
+#   zealots need to know if they should attack move to the ramp or once to the enemy base somehow, maybe
+#       distance between zealots and enemy ramp is a good metric?
+#   ONCE ABOVE IS WORKING NEXT STEP IS BETTER MICRO
+#   AND WORKER RUSH DEFENSE + PROBE MICRO
+#   
 ###
 
 #idea - try to limit calls of specific units, just loop thru all and save each type somewhere
@@ -43,6 +43,10 @@ class GruyereBot(sc2.BotAI):
             self.proxyvar = bp
 
         self.start_attack = False
+        self.enemyramp = min(
+            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper2_for_ramp_wall) == 2},
+            key=(lambda r: self.enemy_start_locations[0].distance_to(r.top_center)),
+        )
 
     #on_step is essentially each frame of the game
     async def on_step(self, iteration):
@@ -85,7 +89,7 @@ class GruyereBot(sc2.BotAI):
         #or rebuild the proxy pylon if the gateways are de-powered
         if self.structures(UnitTypeId.GATEWAY).ready:
             for gate in self.structures(UnitTypeId.GATEWAY):
-                if not gate.is_powered and gate.ready:
+                if not gate.is_powered and gate.is_ready:
                     self.builditeration = iteration
                     if self.can_afford(UnitTypeId.PYLON):
                         if self.builditeration == iteration or self.builditeration + 336 == iteration:
@@ -122,9 +126,7 @@ class GruyereBot(sc2.BotAI):
         if self.start_attack:
             for zealot in self.units(UnitTypeId.ZEALOT):
                 if zealot.is_idle:
-                    zealot.attack(zealot.position.towards(self.enemy_start_locations[0], 2))
-                    
-                    #self.enemy_start_locations[0].
+                    zealot.attack(zealot.position.towards(self.enemyramp.depot_in_middle, 2))
 
     #chooses a random start message
     def start_message(self):
